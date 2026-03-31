@@ -1,0 +1,23 @@
+# =============================================================================
+# AI Survival - GPU Override (NVIDIA CUDA)
+# =============================================================================
+# Layer this on top of the base compose file to enable GPU acceleration:
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+#
+# Prerequisites:
+#   - NVIDIA GPU with CUDA support
+#   - NVIDIA Container Toolkit installed (nvidia-docker2)
+#   - Set GPU_LAYERS=-1 in .env to offload all layers (or a specific number)
+# =============================================================================
+
+services:
+  llama-server:
+    environment:
+      - GPU_LAYERS=${GPU_LAYERS:--1}
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

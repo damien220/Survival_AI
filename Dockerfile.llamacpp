@@ -1,0 +1,70 @@
+# =============================================================================
+# Dockerfile.llamacpp - llama.cpp Server Image (Multi-Stage Build)
+# =============================================================================
+# Builds llama-server from source with OpenAI-compatible API.
+# Default: CPU-only. Set CUDA_VERSION build arg for GPU support.
+#
+# Build (CPU):  docker build -f Dockerfile.llamacpp -t ai-survival-llama .
+# Build (CUDA): docker build -f Dockerfile.llamacpp --build-arg CUDA_VERSION=12.4.0 -t ai-survival-llama-cuda .
+# =============================================================================
+
+# Pinned release for reproducibility
+ARG LLAMA_CPP_VERSION=b8586
+
+# ---------------------------------------------------------------------------
+# Stage 1: Build llama-server from source
+# ---------------------------------------------------------------------------
+FROM debian:bookworm-slim AS builder
+
+ARG LLAMA_CPP_VERSION
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        cmake \
+        git \
+        libcurl4-openssl-dev \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /build
+
+RUN git clone --depth 1 --branch ${LLAMA_CPP_VERSION} \
+        https://github.com/ggerganov/llama.cpp.git .
+
+RUN cmake -B build \
+        -DCMAKE_BUILD_TYPE=Release \
+        -DLLAMA_CURL=ON \
+        -DGGML_CUDA=OFF \
+    && cmake --build build --target llama-server -j$(nproc)
+
+# Place the binary at a known path regardless of cmake output layout
+RUN cp $(find /build/build -name 'llama-server' -type f | head -1) /llama-server \
+    && chmod +x /llama-server
+
+# ---------------------------------------------------------------------------
+# Stage 2: Minimal runtime image
+# ---------------------------------------------------------------------------
+FROM debian:bookworm-slim AS runtime
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libcurl4 \
+        libgomp1 \
+        curl \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy the compiled server binary
+COPY --from=builder /llama-server /usr/local/bin/llama-server
+
+# Copy the entrypoint script
+COPY scripts/entrypoint-llama.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Models are mounted here at runtime
+VOLUME /models
+
+EXPOSE 8080
+
+HEALTHCHECK --interval=15s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8080/health || exit 1
+
+ENTRYPOINT ["/entrypoint.sh"]

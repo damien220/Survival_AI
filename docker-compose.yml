@@ -1,0 +1,66 @@
+# =============================================================================
+# AI Survival - Docker Compose
+# =============================================================================
+# Orchestrates llama.cpp server + Open WebUI for offline LLM usage.
+#
+# Usage:
+#   CPU only:  docker compose up -d
+#   With GPU:  docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d
+#   Stop:      docker compose down
+# =============================================================================
+
+services:
+  # ---------------------------------------------------------------------------
+  # llama-server: LLM inference backend (OpenAI-compatible API)
+  # ---------------------------------------------------------------------------
+  llama-server:
+    build:
+      context: .
+      dockerfile: Dockerfile.llamacpp
+    container_name: ai-survival-llama
+    ports:
+      - "${LLAMA_PORT:-8080}:8080"
+    volumes:
+      - ./models:/models:ro
+    environment:
+      - DEFAULT_MODEL=${DEFAULT_MODEL:-tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf}
+      - CONTEXT_SIZE=${CONTEXT_SIZE:-4096}
+      - GPU_LAYERS=${GPU_LAYERS:-0}
+      - THREADS=${THREADS:-0}
+      - BATCH_SIZE=${BATCH_SIZE:-512}
+      - LLAMA_PORT=8080
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 60s
+      retries: 5
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 8g
+
+  # ---------------------------------------------------------------------------
+  # open-webui: Browser-based chat interface
+  # ---------------------------------------------------------------------------
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: ai-survival-webui
+    ports:
+      - "${WEBUI_PORT:-3000}:8080"
+    volumes:
+      - ./data:/app/backend/data
+    environment:
+      - OPENAI_API_BASE_URLS=http://llama-server:8080/v1
+      - OPENAI_API_KEYS=none
+      - WEBUI_AUTH=${WEBUI_AUTH:-false}
+      - ENABLE_OLLAMA_API=false
+      - ENABLE_OPENAI_API=true
+      - ENABLE_SIGNUP=true
+      - DEFAULT_USER_ROLE=admin
+      - WEBUI_NAME=AI Survival
+    depends_on:
+      llama-server:
+        condition: service_healthy
+    restart: unless-stopped

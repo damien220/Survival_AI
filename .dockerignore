@@ -1,0 +1,25 @@
+# Exclude large/unnecessary files from Docker build context
+models/
+data/
+images/
+Dependencies/
+
+# Documentation
+*.md
+LICENSE
+
+# Git
+.git/
+.gitignore
+.gitkeep
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Env file (values are passed via docker-compose environment)
+.env
