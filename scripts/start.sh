@@ -87,6 +87,46 @@ if [ -f "$PROJECT_DIR/.env" ]; then
 fi
 
 # ---------------------------------------------------------------------------
+# Load images from tar files if Docker images are missing
+# ---------------------------------------------------------------------------
+IMAGES_DIR="$PROJECT_DIR/images"
+REQUIRED_IMAGES=("ai-survival-llama-server" "ai-survival-llama")
+
+images_missing=0
+for img in "${REQUIRED_IMAGES[@]}"; do
+    if docker image inspect "$img" &>/dev/null 2>&1; then
+        images_missing=0
+        break
+    fi
+    images_missing=1
+done
+
+if [ $images_missing -eq 1 ]; then
+    TAR_COUNT=0
+    if [ -d "$IMAGES_DIR" ]; then
+        for tar_file in "$IMAGES_DIR"/*.tar; do
+            [ -f "$tar_file" ] || continue
+            TAR_COUNT=$((TAR_COUNT + 1))
+        done
+    fi
+
+    if [ $TAR_COUNT -gt 0 ]; then
+        echo "Docker images not found. Loading from $IMAGES_DIR/..."
+        for tar_file in "$IMAGES_DIR"/*.tar; do
+            [ -f "$tar_file" ] || continue
+            echo "  Loading: $(basename "$tar_file")..."
+            docker load -i "$tar_file"
+        done
+        echo ""
+    else
+        echo "WARNING: No Docker images found and no tar files in $IMAGES_DIR/"
+        echo "Images will be pulled from the internet on first start."
+        echo "Run ./scripts/setup.sh after copying images/ to this machine."
+        echo ""
+    fi
+fi
+
+# ---------------------------------------------------------------------------
 # Build compose command
 # ---------------------------------------------------------------------------
 cd "$PROJECT_DIR"

@@ -95,6 +95,42 @@ if defined DEFAULT_MODEL (
 )
 
 REM ---------------------------------------------------------------------------
+REM Load images from tar files if Docker images are missing
+REM ---------------------------------------------------------------------------
+set "IMAGES_DIR=%PROJECT_DIR%\images"
+set "IMAGES_FOUND=0"
+
+docker image inspect ai-survival-llama-server >nul 2>&1
+if %ERRORLEVEL% equ 0 set "IMAGES_FOUND=1"
+
+docker image inspect ai-survival-llama >nul 2>&1
+if %ERRORLEVEL% equ 0 set "IMAGES_FOUND=1"
+
+if %IMAGES_FOUND% equ 0 (
+    set "TAR_COUNT=0"
+    if exist "%IMAGES_DIR%\" (
+        for %%f in ("%IMAGES_DIR%\*.tar") do set /a TAR_COUNT+=1
+    )
+
+    if !TAR_COUNT! gtr 0 (
+        echo Docker images not found. Loading from %IMAGES_DIR%\...
+        for %%f in ("%IMAGES_DIR%\*.tar") do (
+            echo   Loading: %%~nxf...
+            docker load -i "%%f"
+            if !ERRORLEVEL! neq 0 (
+                echo   WARNING: Failed to load %%~nxf
+            )
+        )
+        echo.
+    ) else (
+        echo WARNING: No Docker images found and no tar files in %IMAGES_DIR%\
+        echo Images will be pulled from the internet on first start.
+        echo Run scripts\setup.bat after copying images\ to this machine.
+        echo.
+    )
+)
+
+REM ---------------------------------------------------------------------------
 REM Build compose command
 REM ---------------------------------------------------------------------------
 cd /d "%PROJECT_DIR%"
