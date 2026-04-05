@@ -35,6 +35,7 @@ RUN cmake -B build \
         -DCMAKE_BUILD_TYPE=Release \
         -DLLAMA_CURL=ON \
         -DGGML_CUDA=OFF \
+        -DBUILD_SHARED_LIBS=OFF \
     && cmake --build build --target llama-server -j$(nproc)
 
 # Place the binary at a known path regardless of cmake output layout
