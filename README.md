@@ -320,7 +320,7 @@ This project assembles open-source components. See individual model licenses in 
 
 ## Support This Project
 
-If you find {{PROJECT_NAME}} useful, consider supporting its development. Your contributions help keep the project maintained, fund new features, and cover infrastructure costs.
+If you find this useful, consider supporting its development. Your contributions help keep the project maintained, fund new features, and cover infrastructure costs.
 
 ### Donate
 
