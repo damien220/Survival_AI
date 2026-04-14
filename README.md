@@ -11,10 +11,10 @@ A fully offline, portable AI assistant on an external HDD/USB. Plug it into any 
 
 Two deployment modes — choose what suits your target machine:
 
-| Mode | Requires | Command |
-|------|----------|---------|
-| **Docker** | Docker Engine 20.10+ | `./scripts/start.sh` |
-| **Local** | Python 3.11+ | `./scripts/start-local.sh` |
+| Mode       | Requires             | Command                    |
+| ---------- | -------------------- | -------------------------- |
+| **Docker** | Docker Engine 20.10+ | `./scripts/start.sh`       |
+| **Local**  | Python 3.11+         | `./scripts/start-local.sh` |
 
 ```
 External HDD
@@ -77,33 +77,35 @@ scripts\stop-local.bat          # Windows Local
 
 ## Hardware Requirements
 
-| Component | Minimum | Recommended |
-|-----------|---------|-------------|
-| RAM | 4 GB | 16 GB |
-| Storage | 32 GB (system + 1 model) | 128 GB (multiple models) |
-| CPU | Any modern x86_64 | Multi-core for faster inference |
-| GPU | Not required | NVIDIA with CUDA for acceleration |
-| Docker | Engine 20.10+ *(Docker mode)* | Docker Desktop (Win/Mac) |
-| Python | 3.11+ *(Local mode)* | — |
+| Component | Minimum                       | Recommended                       |
+| --------- | ----------------------------- | --------------------------------- |
+| RAM       | 4 GB                          | 16 GB                             |
+| Storage   | 32 GB (system + 1 model)      | 128 GB (multiple models)          |
+| CPU       | Any modern x86_64             | Multi-core for faster inference   |
+| GPU       | Not required                  | NVIDIA with CUDA for acceleration |
+| Docker    | Engine 20.10+ _(Docker mode)_ | Docker Desktop (Win/Mac)          |
+| Python    | 3.11+ _(Local mode)_          | —                                 |
 
 ---
 
 ## Available Models
 
-| Model | Size | Best For |
-|-------|------|----------|
-| TinyLlama 1.1B | ~669 MB | Low-RAM systems, quick testing |
-| Phi-3 Mini 3.8B | ~2.4 GB | Good quality, moderate resources |
-| Mistral 7B Instruct | ~4.4 GB | Strong general-purpose |
-| Llama 3.1 8B Instruct | ~4.9 GB | Best quality |
+| Model                 | Size    | Best For                         |
+| --------------------- | ------- | -------------------------------- |
+| TinyLlama 1.1B        | ~669 MB | Low-RAM systems, quick testing   |
+| Phi-3 Mini 3.8B       | ~2.4 GB | Good quality, moderate resources |
+| Mistral 7B Instruct   | ~4.4 GB | Strong general-purpose           |
+| Llama 3.1 8B Instruct | ~4.9 GB | Best quality                     |
 
 Download interactively:
+
 ```bash
 ./scripts/download-models.sh          # Interactive menu
 ./scripts/download-models.sh --list   # List available models
 ```
 
 Switch between downloaded models:
+
 ```bash
 ./scripts/switch-model.sh
 ```
@@ -134,12 +136,12 @@ If the target machine doesn't have Docker, you can download the installer in adv
 
 Installers are saved to `installers/docker/`:
 
-| Platform | File |
-|----------|------|
-| Windows | `installers/docker/windows/DockerDesktopInstaller.exe` |
-| macOS Intel | `installers/docker/macos/DockerDesktop-Intel.dmg` |
-| macOS ARM | `installers/docker/macos/DockerDesktop-ARM.dmg` |
-| Linux | `installers/docker/linux/docker-*-static-x64.tgz` (+ README) |
+| Platform    | File                                                         |
+| ----------- | ------------------------------------------------------------ |
+| Windows     | `installers/docker/windows/DockerDesktopInstaller.exe`       |
+| macOS Intel | `installers/docker/macos/DockerDesktop-Intel.dmg`            |
+| macOS ARM   | `installers/docker/macos/DockerDesktop-ARM.dmg`              |
+| Linux       | `installers/docker/linux/docker-*-static-x64.tgz` (+ README) |
 
 The `setup.sh` script will detect missing Docker and point you to these files automatically — it does **not** block or exit if Docker is absent.
 
@@ -158,6 +160,7 @@ scripts\install-local.bat             # Windows
 ```
 
 This:
+
 1. Downloads and extracts the llama.cpp pre-built binary for your platform
 2. Creates a Python venv at `data/webui-venv/` and installs Open WebUI
 3. Creates `.env.local` with local-mode settings
@@ -166,12 +169,12 @@ This:
 
 For fully offline local install, pre-download files before copying to the HDD:
 
-| File | Cache location |
-|------|---------------|
-| llama.cpp zip for Linux | `installers/local/llama-cpp/linux/` |
-| llama.cpp zip for macOS | `installers/local/llama-cpp/macos/` |
+| File                      | Cache location                        |
+| ------------------------- | ------------------------------------- |
+| llama.cpp zip for Linux   | `installers/local/llama-cpp/linux/`   |
+| llama.cpp zip for macOS   | `installers/local/llama-cpp/macos/`   |
 | llama.cpp zip for Windows | `installers/local/llama-cpp/windows/` |
-| Open WebUI wheels | `installers/local/open-webui/` |
+| Open WebUI wheels         | `installers/local/open-webui/`        |
 
 `install-local.sh` checks these directories first before attempting to download.
 
@@ -182,6 +185,7 @@ For fully offline local install, pre-download files before copying to the HDD:
 See [OFFLINE.md](OFFLINE.md) for the full guide — preparation, deployment, troubleshooting, and updating.
 
 Summary:
+
 1. **Prepare** (online): download models, build/save Docker images or cache local binaries
 2. **Copy** the entire `AI_Survival/` directory to the external HDD
 3. **Deploy** (offline): plug in, run `setup.sh`, then `start.sh` or `start-local.sh`
@@ -192,15 +196,15 @@ Summary:
 
 Docker-mode settings are in `.env`:
 
-| Variable | Default | Description |
-|----------|---------|-------------|
-| `DEFAULT_MODEL` | `tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf` | Active model filename |
-| `WEBUI_PORT` | `3000` | Open WebUI port |
-| `LLAMA_PORT` | `8080` | llama.cpp API port |
-| `CONTEXT_SIZE` | `4096` | Context window (tokens) |
-| `GPU_LAYERS` | `0` | GPU layers (0=CPU, -1=all) |
-| `THREADS` | `0` | CPU threads (0=auto) |
-| `BATCH_SIZE` | `512` | Prompt batch size |
+| Variable        | Default                                | Description                |
+| --------------- | -------------------------------------- | -------------------------- |
+| `DEFAULT_MODEL` | `tinyllama-1.1b-chat-v1.0.Q4_K_M.gguf` | Active model filename      |
+| `WEBUI_PORT`    | `3000`                                 | Open WebUI port            |
+| `LLAMA_PORT`    | `8080`                                 | llama.cpp API port         |
+| `CONTEXT_SIZE`  | `4096`                                 | Context window (tokens)    |
+| `GPU_LAYERS`    | `0`                                    | GPU layers (0=CPU, -1=all) |
+| `THREADS`       | `0`                                    | CPU threads (0=auto)       |
+| `BATCH_SIZE`    | `512`                                  | Prompt batch size          |
 
 Local-mode settings are in `.env.local` (created by `install-local.sh`). It uses the same variable names.
 
@@ -230,19 +234,19 @@ Checks project structure, configs, models, Docker images, and system requirement
 
 ## Scripts Reference
 
-| Script | Description |
-|--------|-------------|
-| `setup.sh` / `setup.bat` | First-time setup — prompts for Docker or Local mode |
-| `start.sh` / `start.bat` | Start Docker stack (add `--gpu` for CUDA) |
-| `stop.sh` / `stop.bat` | Stop Docker stack |
-| `start-local.sh` / `start-local.bat` | Start local stack (no Docker) |
-| `stop-local.sh` / `stop-local.bat` | Stop local stack |
-| `install-local.sh` / `install-local.bat` | Install llama.cpp + Open WebUI locally |
-| `download-docker.sh` / `download-docker.bat` | Download Docker installers for offline use |
-| `download-models.sh` | Download GGUF models interactively |
-| `switch-model.sh` | Switch the active model |
-| `save-images.sh` | Export Docker images as tars for offline use |
-| `validate.sh` | Pre-deployment validation checklist |
+| Script                                       | Description                                         |
+| -------------------------------------------- | --------------------------------------------------- |
+| `setup.sh` / `setup.bat`                     | First-time setup — prompts for Docker or Local mode |
+| `start.sh` / `start.bat`                     | Start Docker stack (add `--gpu` for CUDA)           |
+| `stop.sh` / `stop.bat`                       | Stop Docker stack                                   |
+| `start-local.sh` / `start-local.bat`         | Start local stack (no Docker)                       |
+| `stop-local.sh` / `stop-local.bat`           | Stop local stack                                    |
+| `install-local.sh` / `install-local.bat`     | Install llama.cpp + Open WebUI locally              |
+| `download-docker.sh` / `download-docker.bat` | Download Docker installers for offline use          |
+| `download-models.sh`                         | Download GGUF models interactively                  |
+| `switch-model.sh`                            | Switch the active model                             |
+| `save-images.sh`                             | Export Docker images as tars for offline use        |
+| `validate.sh`                                | Pre-deployment validation checklist                 |
 
 ---
 
@@ -265,6 +269,7 @@ Yes. Any GGUF model compatible with llama.cpp works. Drop it in `models/` and sw
 
 **Q: The server takes a long time to start.**
 Large models (7B+) take 30–60 seconds to load on CPU. The start script waits up to 5 minutes.
+
 - Docker: `docker logs -f ai-survival-llama`
 - Local: `cat data/logs/llama-server.log`
 
@@ -272,6 +277,7 @@ Large models (7B+) take 30–60 seconds to load on CPU. The start script waits u
 Change `WEBUI_PORT` or `LLAMA_PORT` in `.env` (Docker) or `.env.local` (Local).
 
 **Q: How do I update llama.cpp?**
+
 - Docker: edit `LLAMA_CPP_VERSION` in `Dockerfile.llamacpp`, rebuild, re-export
 - Local: edit `LLAMA_VERSION` in `install-local.sh`, delete `bin/llama-cpp/`, re-run `install-local.sh`
 
@@ -311,3 +317,17 @@ AI_Survival/
 ## License
 
 This project assembles open-source components. See individual model licenses in [models/README.md](models/README.md).
+
+## Support This Project
+
+If you find {{PROJECT_NAME}} useful, consider supporting its development. Your contributions help keep the project maintained, fund new features, and cover infrastructure costs.
+
+### Donate
+
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy_Me_A_Coffee-Support-FFDD00?style=for-the-badge&logo=buy-me-a-coffee&logoColor=black)](https://buymeacoffee.com/ashrafalnas)
+[![Patreon](https://img.shields.io/badge/Patreon-Support-F96854?style=for-the-badge&logo=patreon&logoColor=white)](https://www.patreon.com/cw/UnrealPatr)
+
+| Platform            | Type                         | Link                                                                 |
+| ------------------- | ---------------------------- | -------------------------------------------------------------------- |
+| **Buy Me a Coffee** | One-time or monthly support  | [buymeacoffee.com/ashrafalnas](https://buymeacoffee.com/ashrafalnas) |
+| **Patreon**         | Recurring monthly membership | [patreon.com/cw/UnrealPatr](https://www.patreon.com/cw/UnrealPatr)   |
