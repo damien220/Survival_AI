@@ -1,6 +1,6 @@
 # AI Survival
 
-[AI Survival](AI_Survival.jpg)
+![AI Survival](AI_Survival.jpg)
 
 A fully offline, portable AI assistant on an external HDD/USB. Plug it into any machine, run one script, and chat with a local LLM through a browser-based UI. No internet required after initial setup.
 
